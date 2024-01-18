@@ -5,42 +5,48 @@ let allRepositories = [];
 
 // Function used for getting user profile and repositories
 function getProfileAndRepositories() {
-
     const username = document.getElementById('usernameInput').value;
-
-    // API url for fetching the data
-    const apiUrl = `https://api.github.com/users/${username}`;
+    const accessToken = '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';
+    const apiUrl = `https://api.github.com/users/${username}?access_token=${accessToken}`;
     const repositoriesApiUrl = `https://api.github.com/users/${username}/repos`;
 
-    // Show the loader while API calls are in progress
     showLoader();
 
-    // Fetch the user profile
-    fetch(apiUrl)
+    // Fetch user profile
+    fetch(apiUrl, {
+        headers: {
+            Authorization: `Bearer ${accessToken}`,
+        },
+    })
         .then(response => response.json())
         .then(user => {
             displayUserProfile(user);
-
-            // Show the repository search input when user is found
             document.getElementById('repoSearchDiv').style.display = 'block';
         })
         .catch(error => {
-            // Show the message if the user with the given username is not found
             console.error('Error fetching user profile:', error);
             alert('Error fetching user profile. Please try again.');
         })
         .finally(() => {
-            // Hide loader when API calls are complete
             hideLoader();
         });
 
     // Fetch all repositories
-    fetch(repositoriesApiUrl)
+    fetch(repositoriesApiUrl, {
+        headers: {
+            Authorization: `Bearer ${accessToken}`,
+        },
+    })
         .then(response => response.json())
         .then(repositories => {
             allRepositories = repositories;
             displayRepositories(allRepositories);
             displayPagination(allRepositories);
+
+            // Call getRepositoryTopics for each repository
+            repositories.forEach(repo => {
+                getRepositoryTopics(username, repo.name);
+            });
         })
         .catch(error => {
             console.error('Error fetching repositories:', error);
@@ -118,29 +124,34 @@ function displayRepositories(repositories) {
     displayedRepos.forEach(repo => {
         const repoCard = document.createElement('div');
         repoCard.className = 'col-md-6 repo-card';
-
+    
         const cardContent = `
-      <div class="card">
-        <div class="card-body">
-          <h5 class="card-title">${repo.name}</h5>
-          <p class="card-text">${repo.description || 'No description available'}</p>
-          <div class="">
-            <p class="btn btn-primary">${repo.language || 'Not specified'}</p>
-            <div style="display: flex; flex-direction: row; align-items: center; margin-bottom: 10px;">
-            <p class="list-group-item"><i style="margin-right: 10px;" class="fa-regular fa-star"></i> Stars: ${repo.stargazers_count}</p>
-            <p class="list-group-item"><i style="margin-right: 10px;" class="fa-solid fa-code-fork"></i>Forks: ${repo.forks_count}</p>
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">${repo.name}</h5>
+                    <p class="card-text">${repo.description || 'No description available'}</p>
+                    <div class="">
+                        <p class="btn btn-primary">${repo.language || 'Not specified'}</p>
+                        <div style="display: flex; flex-direction: row; align-items: center; margin-bottom: 10px;">
+                            <p class="list-group-item"><i style="margin-right: 10px;" class="fa-regular fa-star"></i> Stars: ${repo.stargazers_count}</p>
+                            <p class="list-group-item"><i style="margin-right: 10px;" class="fa-solid fa-code-fork"></i>Forks: ${repo.forks_count}</p>
+                        </div>
+                        <!-- Unique topicsList element for each repository -->
+                        <div class="mt-3" id="topicsList_${repo.name}"></div>
+                    </div>
+                    <a href="${repo.html_url}" class="btn btn-primary" target="_blank" style="margin-left: auto; display: block;">View on GitHub<i class="fa-solid fa-square-up-right" style="margin-left: 10px; font-size:24px;"></i></a>
+                </div>
             </div>
-            
-          </div>
-          <a href="${repo.html_url}" class="btn btn-primary" target="_blank" style="margin-left: auto; display: block;">View on GitHub<i class="fa-solid fa-square-up-right" style="margin-left: 10px; font-size:24px;"></i></a>
-        </div>
-      </div>
-    `;
-
+        `;
+    
         repoCard.innerHTML = cardContent;
         repositoriesList.appendChild(repoCard);
+    
+        // Fetch and display topics for the current repository
+        getRepositoryTopics(repo.owner.login, repo.name, `topicsList_${repo.name}`);
     });
-
+    
+    
     // Check if there are more pages and update the pagination
     if (filteredRepositories.length > itemsPerPage) {
         displayPagination(filteredRepositories);
@@ -159,6 +170,30 @@ document.getElementById('repoSearchInput').addEventListener('keyup', function (e
         searchRepositories();
     }
 });
+
+// Function to get repository topics
+function getRepositoryTopics(owner, repo, topicsListId) {
+    const accessToken = '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';
+    const topicsApiUrl = `https://api.github.com/repos/${owner}/${repo}/topics`;
+
+    fetch(topicsApiUrl)
+        .then(response => response.json())
+        .then(topics => {
+            // Display topics as needed
+            displayRepositoryTopics(topics.names, topicsListId);
+        })
+        .catch(error => {
+            console.error(`Error fetching topics for repository ${repo}:`, error);
+        });
+}
+
+// Function to display repository topics
+function displayRepositoryTopics(topics, topicsListId) {
+    const topicsList = document.getElementById(topicsListId);
+    topicsList.innerHTML = topics.map(topic => `<span class="badge badge-info">${topic}</span>`).join(' ');
+}
+
+
 
 // Implementing pagination and shwoing 10 repos per page
 function displayPagination(repositories) {
