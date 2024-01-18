@@ -123,7 +123,7 @@ function displayRepositories(repositories) {
                     <p class="card-text">${repo.description || 'No description available'}</p>
                     <div class="">
                         <div class="mt-3 mb-3" id="topicsList_${repo.name}"></div>
-                        <div style="display: flex; flex-direction: row; align-items: center; margin-bottom: 10px;">
+                        <div style="margin: auto; display: flex; flex-direction: row; align-items: center; margin-bottom: 10px;">
                             <p class="list-group-item"><i style="margin-right: 10px;" class="fa-regular fa-star"></i> Stars: ${repo.stargazers_count}</p>
                             <p class="list-group-item"><i style="margin-right: 10px;" class="fa-solid fa-code-fork"></i>Forks: ${repo.forks_count}</p>
                         </div>
