@@ -6,18 +6,13 @@ let allRepositories = [];
 // Function used for getting user profile and repositories
 function getProfileAndRepositories() {
     const username = document.getElementById('usernameInput').value;
-    const accessToken = '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';
-    const apiUrl = `https://api.github.com/users/${username}?access_token=${accessToken}`;
+    const apiUrl = `https://api.github.com/users/${username}`;
     const repositoriesApiUrl = `https://api.github.com/users/${username}/repos`;
 
     showLoader();
 
     // Fetch user profile
-    fetch(apiUrl, {
-        headers: {
-            Authorization: `Bearer ${accessToken}`,
-        },
-    })
+    fetch(apiUrl)
         .then(response => response.json())
         .then(user => {
             displayUserProfile(user);
@@ -32,11 +27,7 @@ function getProfileAndRepositories() {
         });
 
     // Fetch all repositories
-    fetch(repositoriesApiUrl, {
-        headers: {
-            Authorization: `Bearer ${accessToken}`,
-        },
-    })
+    fetch(repositoriesApiUrl)
         .then(response => response.json())
         .then(repositories => {
             allRepositories = repositories;
