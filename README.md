@@ -1,5 +1,4 @@
-Fyle Assignment :- Github Repositories Listing Page
-
+## Fyle Assignment :- Github Repositories Listing Page
 
 ## <a name="quick-start">🤸 Quick Start</a>
 
@@ -19,3 +18,9 @@ cd Fyle-Assignment
 Open the project folder in VS Code and on index.html file , do right click and select Open with live server.
 
 You will redirected to your browser where the project will be running.
+
+
+## Working
+Enter the github username to search for the user profile and repositories.
+
+For searching between repositories enter the repository name in the input and hit enter. If you want to show all repos again empty the input and click enter.
