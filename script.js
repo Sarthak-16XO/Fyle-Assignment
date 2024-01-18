@@ -122,13 +122,11 @@ function displayRepositories(repositories) {
                     <h5 class="card-title">${repo.name}</h5>
                     <p class="card-text">${repo.description || 'No description available'}</p>
                     <div class="">
-                        <p class="btn btn-primary">${repo.language || 'Not specified'}</p>
+                        <div class="mt-3 mb-3" id="topicsList_${repo.name}"></div>
                         <div style="display: flex; flex-direction: row; align-items: center; margin-bottom: 10px;">
                             <p class="list-group-item"><i style="margin-right: 10px;" class="fa-regular fa-star"></i> Stars: ${repo.stargazers_count}</p>
                             <p class="list-group-item"><i style="margin-right: 10px;" class="fa-solid fa-code-fork"></i>Forks: ${repo.forks_count}</p>
                         </div>
-                        <!-- Unique topicsList element for each repository -->
-                        <div class="mt-3" id="topicsList_${repo.name}"></div>
                     </div>
                     <a href="${repo.html_url}" class="btn btn-primary" target="_blank" style="margin-left: auto; display: block;">View on GitHub<i class="fa-solid fa-square-up-right" style="margin-left: 10px; font-size:24px;"></i></a>
                 </div>
@@ -181,7 +179,7 @@ function getRepositoryTopics(owner, repo, topicsListId) {
 // Function to display repository topics
 function displayRepositoryTopics(topics, topicsListId) {
     const topicsList = document.getElementById(topicsListId);
-    topicsList.innerHTML = topics.map(topic => `<span class="badge badge-info">${topic}</span>`).join(' ');
+    topicsList.innerHTML = topics.map(topic => `<span class="badge badge-primary">${topic}</span>`).join(' ');
 }
 
 
